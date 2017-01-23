@@ -7,9 +7,19 @@
 int	putchar_ft(int c)
 {
 	char	d;
+	static int i = 0;
 
+	++i;
 	d = c;
-	return (write(1, &d, 1));
+	if (i % 2 && (c >= 'a' && c <= 'z'))
+		return (write(1, &d, 1));
+	else if (c >= 'a' && c <= 'z')
+	{
+		i = 0;
+		return (i);
+	}
+	else
+		return (write(1, &d, 1));
 }
 
 int	get_touch(struct termios termos)
@@ -17,6 +27,13 @@ int	get_touch(struct termios termos)
 	char	buf[3];
 	char	*res;
 
+	return (0);
+}
+
+int	check_key(char buf[3], int a, int b, int c)
+{
+	if (buf[0] == (char)a && buf[1] == (char)b && buf[2] == (char)c)
+		return (1);
 	return (0);
 }
 
@@ -34,6 +51,8 @@ int main()
 		return (-1);
 	if (tcgetattr(0, &termos) == -1)
 		return (-1);
+	//	tputs(tgetstr("cl", NULL), 0, putchar_ft);
+	//	tputs(tgoto(tgetstr("cm", NULL), 0, 0), 1, putchar_ft);
 	termos.c_lflag &= ~(ICANON);
 	termos.c_lflag &= ~(ECHO);
 	termos.c_cc[VMIN] = 1;
@@ -42,40 +61,40 @@ int main()
 		return (-1);
 	while (1)
 	{
-		read(0, buf, 3);
-		if (buf[0] >= 'a' && buf[0] <= 'z')
+		while (read(0, buf, 3))
 		{
-			test = (char)buf[0];
-			tputs(&test, 0, putchar_ft);
-	//		printf("%c", (char)buf[0]);
-		}
-		if (buf[0] == 4)
-			printf("^d\n");
-		else if (buf[0] == 12)
-		{
-			res = tgetstr("le", NULL);
-			tputs(res, 0, putchar_ft);
-		}
-		if (buf[0] == 27 && buf[1] == 91)
-		{
-			if (buf[2] == 65)
-				printf("up arrow\n");
-			if (buf[2] == 66)
-				printf("down arrow\n");
-			if (buf[2] == 67)
-				printf("right arrow\n");
-			if (buf[2] == 68)
+			if (buf[0] >= 'a' && buf[0] <= 'z')
 			{
-			//	printf("left arrow\n");
-				res = tgetstr("le", NULL);
-				tputs(res, 0, putchar_ft);
+				test = buf[0];
+				tputs(&test, 1, putchar_ft);
 			}
+			else if (buf[0] == 4)
+				printf("^d\n");
+			else if (check_key(buf, 12, 0, 0))
+			{
+				res = tgetstr("cl", NULL);
+				tputs(res, 1, putchar_ft);
+			}
+			else if (check_key(buf, 27, 91, 65))
+				printf("up arrow\n");
+			else if (check_key(buf, 27, 91, 66))
+				printf("down arrow\n");
+			else if (check_key(buf, 27, 91, 67))
+			{
+				res = tgetstr("nd", NULL);
+				tputs(res, 1, putchar_ft);
+			}
+			else if (check_key(buf, 27, 91, 68))
+			{
+				res = tgetstr("le", NULL);
+				tputs(res, 1, putchar_ft);
+			}
+			else if (buf[0])
+				printf("\n%d | %d | %d\n", buf[0], buf[1], buf[2]);
+			buf[0] = 0;
+			buf[1] = 0;
+			buf[2] = 0;
 		}
-//		if (buf[0])
-//			printf("%d | %d | %d\n", buf[0], buf[1], buf[2]);
-		buf[0] = 0;
-		buf[1] = 0;
-		buf[2] = 0;
 	}
 	return (0);
 }
