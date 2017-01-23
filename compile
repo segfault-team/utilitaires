@@ -1,2 +1,0 @@
-#!/bin/sh
-gcc -Wall -Wextra -Werror beg_term.c -lncurses -o term
