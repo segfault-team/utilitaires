@@ -3,6 +3,7 @@
 #include <term.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <ttyent.h>
 
 int	putchar_ft(int c)
 {
@@ -12,6 +13,7 @@ int	putchar_ft(int c)
 	return (write(1, &d, 1));
 }
 
+/*
 int	get_touch(struct termios termos)
 {
 	char	buf[3];
@@ -19,6 +21,7 @@ int	get_touch(struct termios termos)
 
 	return (0);
 }
+*/
 
 int main()
 {
@@ -26,7 +29,20 @@ int main()
 	struct termios	termos;
 	char			*res;
 	char			buf[3];
+	struct ttyent	*ttyent;
 
+	printf("---------------- Testing out ------------------\n");
+	ttyent = getttyent();
+	printf("ty_name: %s\n", ttyent->ty_name);
+	printf("ty_getty: %s\n", ttyent->ty_getty);
+	printf("ty_type: %s\n", ttyent->ty_type);
+	printf("ty_window: %s\n", ttyent->ty_window);
+	printf("ty_comment: %s\n", ttyent->ty_comment);
+	printf("-----------------------------------------------\n");
+	printf("isatty: %d\n", isatty(1));
+	printf("ttyname: %s\n", ttyname(1));
+	printf("ttyslot: %d\n", ttyslot());
+	printf("-----------------------------------------------\n");
 	if ((name_term = getenv("TERM")) == NULL)
 		return (-1);
 	if (tgetent(NULL, name_term) == ERR)
