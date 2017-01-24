@@ -1,0 +1,10 @@
+-manage fd for redirection
+
+|-> voir comment reconnaitre qu'il a eu un deplacement pour ne
+|	plus afficher l'historique si dplct il y a eu. je pensais
+|
+|-> obligation de savoir ou on se trouve sur la ligne pour les
+|	retours debut/fin de ligne
+	|-> compter chaque caractere qui s'affiche
+		|-> prendre en compte le wrapping
+			|-> gerer position et dimension de fenetre

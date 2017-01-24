@@ -1,6 +1,8 @@
 #include <fcntl.h>
 #include "libft.h"
 
+int putchar_ft(int c);
+
 /*
 **	MANAGE PROMPT OF HISTORY CMD
 **	TODO: ERASE CURRENT LINE AND PROMPT FROM
@@ -24,15 +26,11 @@ int	term_history(int up)
 			hcmd[i++] = tmp;
 	}
 	if (!i)
-	{
-		++i;
-		while (hcmd[i])
+		while (hcmd[i + 1])
 			++i;
-		++i;
-	}
 	i -= up;
-	i = (i < 1) ? 1 : i;
-	if (i >= 1)
+	i = (i < 0) ? 0 : i;
+	if (i >= -1)
 		ft_printf("%s", hcmd[i]);
 	if (close(fd) == -1)
 		ft_printfd(2, "MANAGE ERROR");
