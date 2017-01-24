@@ -4,6 +4,13 @@
 #include <unistd.h>
 #include <stdio.h>
 
+int	term_history(int up);
+
+typedef struct	s_env
+{
+	char		**cmd;
+}				t_env;
+
 int	putchar_ft(int c)
 {
 	char	d;
@@ -42,8 +49,11 @@ int main()
 	char			*name_term;
 	struct termios	termos;
 	char			*res;
+	char			*id;
 	char			buf[3];
 	char			test;
+	int				up = 0;
+	char			**test_2;
 
 	if ((name_term = getenv("TERM")) == NULL)
 		return (-1);
@@ -63,6 +73,7 @@ int main()
 	{
 		while (read(0, buf, 3))
 		{
+			up = (check_key(buf, 27, 91, 65)) ? up + 1: 0;
 			if (buf[0] >= 'a' && buf[0] <= 'z')
 			{
 				test = buf[0];
@@ -70,13 +81,27 @@ int main()
 			}
 			else if (buf[0] == 4)
 				printf("^d\n");
+			else if (buf[0] == 1)
+			{
+				// retour au debut de ligne
+				res = tgetstr("cr", NULL);
+				tputs(res, 1, putchar_ft);
+			}
 			else if (check_key(buf, 12, 0, 0))
 			{
 				res = tgetstr("cl", NULL);
 				tputs(res, 1, putchar_ft);
 			}
 			else if (check_key(buf, 27, 91, 65))
-				printf("up arrow\n");
+			{
+				//cr: return at the begining of the line
+				//cd: clear the line
+				res = tgetstr("cr", NULL);
+				id = tgetstr("cd", NULL);
+				tputs(res, 1, putchar_ft);
+				tputs(id, 1, putchar_ft);
+				term_history(up);
+			}
 			else if (check_key(buf, 27, 91, 66))
 				printf("down arrow\n");
 			else if (check_key(buf, 27, 91, 67))
